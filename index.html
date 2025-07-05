@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resep Seafood Populer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .recipe-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .recipe-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .recipe-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .recipe-time {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .recipe-difficulty {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .easy { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .hard { background: #f8d7da; color: #721c24; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .ingredients, .instructions {
+            margin-bottom: 30px;
+        }
+
+        .ingredients h3, .instructions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .ingredients ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .ingredients li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .ingredients li:before {
+            content: "🐟";
+            position: absolute;
+            left: 0;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            padding: 10px 0;
+            line-height: 1.6;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            width: 300px;
+            max-width: 100%;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .recipe-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦐 Resep Seafood Populer</h1>
+            <p class="subtitle">Koleksi resep makanan laut terpopuler tahun ini</p>
+            <p class="subtitle" style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">Dibuat oleh: RYAN DWI IRAWAN</p>
+            <p class="subtitle" style="margin-top: 5px; font-size: 0.8em; opacity: 0.7;">Kelas: 06TPLK002 | NIM: 221011401661</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Cari resep seafood..." id="searchInput">
+        </div>
+
+        <div class="recipe-grid" id="recipeGrid">
+            <!-- Resep akan diisi oleh JavaScript -->
+        </div>
+    </div>
+
+    <footer style="text-align: center; color: rgba(255,255,255,0.8); margin-top: 40px; padding: 20px; font-size: 0.9em;">
+        <p>© 2025 RYAN DWI IRAWAN - Seafood Recipe Collection</p>
+        <p style="font-size: 0.8em; margin-top: 5px;">Kelas: 06TPLK002 | NIM: 221011401661</p>
+    </footer>
+
+    <!-- Modal -->
+    <div id="recipeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalBody">
+                <!-- Konten modal akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const recipes = [
+            {
+                id: 1,
+                title: "Udang Saus Padang",
+                description: "Udang segar dengan saus padang yang pedas gurih, cocok untuk makan bersama keluarga.",
+                emoji: "🦐",
+                time: "30 menit",
+                difficulty: "medium",
+                ingredients: [
+                    "500g udang segar, kupas bersih",
+                    "3 siung bawang putih, cincang",
+                    "5 buah cabai merah, iris",
+                    "2 sdm saus tiram",
+                    "1 sdm kecap manis",
+                    "1 sdt garam",
+                    "2 sdm minyak goreng",
+                    "1 batang daun bawang, iris"
+                ],
+                instructions: [
+                    "Panaskan minyak dalam wajan, tumis bawang putih hingga harum",
+                    "Masukkan cabai merah, tumis hingga layu",
+                    "Tambahkan udang, aduk rata hingga udang berubah warna",
+                    "Masukkan saus tiram, kecap manis, dan garam",
+                    "Aduk rata dan masak hingga udang matang sempurna",
+                    "Taburi dengan daun bawang, angkat dan sajikan"
+                ]
+            },
+            {
+                id: 2,
+                title: "Cumi Asam Manis",
+                description: "Cumi-cumi segar dengan saus asam manis yang segar dan menggugah selera.",
+                emoji: "🦑",
+                time: "25 menit",
+                difficulty: "easy",
+                ingredients: [
+                    "400g cumi-cumi, potong bulat",
+                    "1 buah nanas, potong dadu",
+                    "2 sdm saus tomat",
+                    "1 sdm cuka",
+                    "2 sdm gula pasir",
+                    "1 sdt garam",
+                    "2 siung bawang putih",
+                    "1 buah paprika merah, potong"
+                ],
+                instructions: [
+                    "Bersihkan cumi-cumi dan potong sesuai selera",
+                    "Tumis bawang putih hingga harum",
+                    "Masukkan cumi-cumi, masak hingga setengah matang",
+                    "Tambahkan nanas dan paprika",
+                    "Buat saus dengan mencampur saus tomat, cuka, gula, dan garam",
+                    "Tuang saus ke dalam wajan, aduk rata",
+                    "Masak hingga cumi empuk dan saus mengental"
+                ]
+            },
+            {
+                id: 3,
+                title: "Ikan Bakar Kecap",
+                description: "Ikan bakar dengan bumbu kecap yang manis gurih, perfect untuk BBQ party.",
+                emoji: "🐟",
+                time: "45 menit",
+                difficulty: "medium",
+                ingredients: [
+                    "1 ekor ikan kakap (500g)",
+                    "4 sdm kecap manis",
+                    "2 sdm air jeruk nipis",
+                    "3 siung bawang putih, haluskan",
+                    "1 sdt merica bubuk",
+                    "1 sdt garam",
+                    "2 sdm minyak goreng",
+                    "Daun pisang untuk pembungkus"
+                ],
+                instructions: [
+                    "Bersihkan ikan dan buat sayatan di kedua sisi",
+                    "Campur semua bumbu jadi satu",
+                    "Lumuri ikan dengan bumbu, diamkan 30 menit",
+                    "Bungkus ikan dengan daun pisang",
+                    "Bakar di atas bara api sedang selama 15 menit tiap sisi",
+                    "Sajikan dengan nasi hangat dan sambal"
+                ]
+            },
+            {
+                id: 4,
+                title: "Kepiting Saus Tiram",
+                description: "Kepiting segar dengan saus tiram yang kaya rasa, cocok untuk acara spesial.",
+                emoji: "🦀",
+                time: "40 menit",
+                difficulty: "hard",
+                ingredients: [
+                    "2 ekor kepiting segar",
+                    "3 sdm saus tiram",
+                    "2 sdm saus ikan",
+                    "1 sdm gula merah",
+                    "4 siung bawang putih",
+                    "2 cm jahe, memarkan",
+                    "2 batang daun bawang",
+                    "Minyak untuk menumis"
+                ],
+                instructions: [
+                    "Bersihkan kepiting, potong menjadi 4 bagian",
+                    "Goreng kepiting sebentar hingga berubah warna",
+                    "Tumis bawang putih dan jahe hingga harum",
+                    "Masukkan kepiting, aduk rata",
+                    "Tambahkan saus tiram, saus ikan, dan gula merah",
+                    "Masak dengan api kecil hingga bumbu meresap",
+                    "Taburi daun bawang, sajikan hangat"
+                ]
+            },
+            {
+                id: 5,
+                title: "Kerang Hijau Kuah Santan",
+                description: "Kerang hijau segar dalam kuah santan yang creamy dan aromatik.",
+                emoji: "🦪",
+                time: "35 menit",
+                difficulty: "medium",
+                ingredients: [
+                    "500g kerang hijau",
+                    "200ml santan kental",
+                    "3 lembar daun salam",
+                    "2 batang serai, memarkan",
+                    "5 buah cabai rawit",
+                    "1 sdt kunyit bubuk",
+                    "1 sdt garam",
+                    "2 sdm minyak goreng"
+                ],
+                instructions: [
+                    "Rebus kerang hingga terbuka, sisihkan",
+                    "Panaskan minyak, tumis bumbu halus",
+                    "Masukkan daun salam dan serai",
+                    "Tuang santan, aduk perlahan",
+                    "Masukkan kerang dan cabai rawit",
+                    "Bumbui dengan garam dan kunyit",
+                    "Masak hingga kuah agak mengental"
+                ]
+            },
+            {
+                id: 6,
+                title: "Salmon Teriyaki",
+                description: "Salmon fillet dengan saus teriyaki yang manis dan glazed sempurna.",
+                emoji: "🍣",
+                time: "20 menit",
+                difficulty: "easy",
+                ingredients: [
+                    "300g salmon fillet",
+                    "3 sdm kecap asin",
+                    "2 sdm mirin",
+                    "1 sdm gula",
+                    "1 sdt minyak wijen",
+                    "2 siung bawang putih cincang",
+                    "1 sdt jahe parut",
+                    "Wijen putih untuk taburan"
+                ],
+                instructions: [
+                    "Potong salmon menjadi porsi sesuai selera",
+                    "Campur kecap asin, mirin, gula untuk saus teriyaki",
+                    "Panaskan wajan anti lengket",
+                    "Panggang salmon hingga matang di kedua sisi",
+                    "Tuang saus teriyaki, masak hingga mengental",
+                    "Taburi wijen putih, sajikan dengan nasi"
+                ]
+            },
+            {
+                id: 7,
+                title: "Lobster Mentega",
+                description: "Lobster segar dengan saus mentega yang gurih dan aromatic spices.",
+                emoji: "🦞",
+                time: "50 menit",
+                difficulty: "hard",
+                ingredients: [
+                    "1 ekor lobster segar (400g)",
+                    "100g mentega",
+                    "5 siung bawang putih cincang",
+                    "2 sdm saus tiram",
+                    "1 sdm kecap manis",
+                    "1 sdt merica putih",
+                    "2 batang daun bawang",
+                    "Cabai merah untuk hiasan"
+                ],
+                instructions: [
+                    "Rebus lobster hingga matang, belah dua",
+                    "Keluarkan daging lobster, sisihkan cangkangnya",
+                    "Lelehkan mentega, tumis bawang putih",
+                    "Masukkan saus tiram dan kecap manis",
+                    "Tambahkan daging lobster, aduk perlahan",
+                    "Bumbui dengan merica putih",
+                    "Masukkan kembali ke cangkang, taburi daun bawang"
+                ]
+            },
+            {
+                id: 8,
+                title: "Gurita Bakar Bumbu Kacang",
+                description: "Gurita bakar dengan bumbu kacang pedas yang khas dan menggugah selera.",
+                emoji: "🐙",
+                time: "60 menit",
+                difficulty: "hard",
+                ingredients: [
+                    "1 ekor gurita sedang (500g)",
+                    "100g kacang tanah sangrai",
+                    "5 buah cabai merah",
+                    "3 siung bawang putih",
+                    "1 sdt terasi bakar",
+                    "2 sdm gula merah",
+                    "1 sdt garam",
+                    "2 sdm air asam jawa"
+                ],
+                instructions: [
+                    "Rebus gurita hingga empuk, potong sesuai selera",
+                    "Haluskan kacang tanah, cabai, bawang putih, terasi",
+                    "Tumis bumbu halus hingga harum",
+                    "Tambahkan gula merah dan air asam jawa",
+                    "Lumuri gurita dengan bumbu kacang",
+                    "Bakar di atas bara api hingga sedikit gosong",
+                    "Sajikan dengan lalapan dan nasi"
+                ]
+            },
+            {
+                id: 9,
+                title: "Scallop Saus Lemon",
+                description: "Scallop segar dengan saus lemon butter yang elegant dan refreshing.",
+                emoji: "🔘",
+                time: "15 menit",
+                difficulty: "medium",
+                ingredients: [
+                    "200g scallop segar",
+                    "50g mentega",
+                    "2 sdm air jeruk lemon",
+                    "1 sdt kulit lemon parut",
+                    "2 siung bawang putih cincang",
+                    "1 sdt garam",
+                    "Peterseli cincang untuk taburan"
+                ],
+                instructions: [
+                    "Bersihkan scallop, keringkan dengan paper towel",
+                    "Panaskan wajan dengan api besar",
+                    "Panggang scallop 2 menit tiap sisi",
+                    "Tambahkan mentega dan bawang putih",
+                    "Tuang air jeruk lemon dan kulit lemon",
+                    "Bumbui dengan garam",
+                    "Taburi peterseli, sajikan segera"
+                ]
+            },
+            {
+                id: 10,
+                title: "Paella Seafood",
+                description: "Paella Spain dengan seafood mix yang kaya rasa dan saffron aromatic.",
+                emoji: "🥘",
+                time: "45 menit",
+                difficulty: "hard",
+                ingredients: [
+                    "300g beras bomba/jasmine",
+                    "200g udang",
+                    "200g cumi potong",
+                    "150g kerang hijau",
+                    "1 sdt saffron",
+                    "500ml kaldu seafood",
+                    "3 siung bawang putih",
+                    "1 buah tomat parut",
+                    "100ml minyak zaitun"
+                ],
+                instructions: [
+                    "Rendam saffron dalam kaldu hangat",
+                    "Panaskan minyak zaitun dalam paella pan",
+                    "Tumis bawang putih dan tomat hingga harum",
+                    "Masukkan beras, aduk hingga terbalut minyak",
+                    "Tuang kaldu saffron perlahan",
+                    "Tambahkan seafood, jangan diaduk",
+                    "Masak 20 menit hingga beras empuk",
+                    "Istirahatkan 5 menit sebelum disajikan"
+                ]
+            }
+        ];
+
+        let filteredRecipes = recipes;
+
+        function renderRecipes(recipesToRender) {
+            const recipeGrid = document.getElementById('recipeGrid');
+            recipeGrid.innerHTML = '';
+
+            recipesToRender.forEach(recipe => {
+                const recipeCard = document.createElement('div');
+                recipeCard.className = 'recipe-card';
+                recipeCard.innerHTML = `
+                    <div class="recipe-image">${recipe.emoji}</div>
+                    <div class="recipe-title">${recipe.title}</div>
+                    <div class="recipe-desc">${recipe.description}</div>
+                    <div class="recipe-time">⏱️ ${recipe.time}</div>
+                    <div class="recipe-difficulty ${recipe.difficulty}">
+                        ${recipe.difficulty === 'easy' ? 'Mudah' : recipe.difficulty === 'medium' ? 'Sedang' : 'Sulit'}
+                    </div>
+                `;
+                recipeCard.addEventListener('click', () => showRecipeModal(recipe));
+                recipeGrid.appendChild(recipeCard);
+            });
+        }
+
+        function showRecipeModal(recipe) {
+            const modal = document.getElementById('recipeModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalBody.innerHTML = `
+                <h2 class="modal-title">${recipe.emoji} ${recipe.title}</h2>
+                <div class="ingredients">
+                    <h3>Bahan-bahan:</h3>
+                    <ul>
+                        ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="instructions">
+                    <h3>Cara memasak:</h3>
+                    <ol>
+                        ${recipe.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
+                    </ol>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function searchRecipes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            filteredRecipes = recipes.filter(recipe => 
+                recipe.title.toLowerCase().includes(searchTerm) ||
+                recipe.description.toLowerCase().includes(searchTerm)
+            );
+            renderRecipes(filteredRecipes);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', searchRecipes);
+
+        document.querySelector('.close').addEventListener('click', () => {
+            document.getElementById('recipeModal').style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('recipeModal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initialize
+        renderRecipes(recipes);
+    </script>
+</body>
+</html>
